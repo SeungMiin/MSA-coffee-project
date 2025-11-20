@@ -1,0 +1,11 @@
+rootProject.name = 'sb3_msa3'
+
+include 'gateway-service'
+include 'gateway-ui'
+include 'gradle'
+include 'eureka-server'
+include 'order-service'
+include 'board-service'
+include 'customer-service'
+include 'menu-service'
+include 'stock-service'

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MSA 프로젝트 - The Cafe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .nav-link { color: #333; }
+        .nav-link:hover { color: #0d6efd; }
+
+        .hero-section {
+            background-image:
+                    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                    url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .btn-coffee {
+            background-color: #6f4e37;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+        .btn-coffee:hover {
+            background-color: #5a3f2d;
+            color: white;
+        }
+
+        .card {
+            border: none;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,.1);
+        }
+        .card-icon {
+            font-size: 3rem;
+            color: #6f4e37;
+        }
+    </style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-cup-hot-fill"></i> The MSA Cafe
+        </a>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/menus" id="menuLink">메뉴 관리</a></li>
+                <li class="nav-item"><a class="nav-link" href="/orders" id="orderLink">주문</a></li>
+                <li class="nav-item"><a class="nav-link" href="/list" id="listLink">게시판</a></li>
+                <li class="nav-item"><a class="nav-link" href="/stocks" id="stockLink">재고</a></li>
+                <li class="nav-item"><a class="nav-link" href="/dashboard" id="dashLink">주문 현황</a></li>
+                <li class="nav-item"><a class="nav-link" href="/customers" id="customerLink">고객 관리</a></li>
+            </ul>
+
+            <ul class="navbar-nav">
+                <li class="nav-item" id="loginNav"><a class="nav-link" href="/login">로그인</a></li>
+                <li class="nav-item" id="registerNav"><a class="nav-link" href="/register">회원가입</a></li>
+
+                <li class="nav-item d-none" id="userNav"><span class="nav-link" id="username"></span></li>
+                <li class="nav-item d-none" id="changePasswordNav"><a class="nav-link" href="/changepassword">비밀번호 변경</a></li>
+                <li class="nav-item d-none" id="logoutNav"><a class="nav-link" href="#" id="logoutBtn">로그아웃</a></li>
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+<!-- 메인 Hero -->
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold">The MSA Cafe</h1>
+        <p class="lead fs-4">마이크로서비스 기반 카페 주문 시스템</p>
+
+        <a href="/orders" class="btn btn-coffee btn-lg m-2" id="heroOrderBtn">
+            <i class="bi bi-cart-check"></i> 지금 주문하기
+        </a>
+
+        <!-- 관리자 버튼 -->
+        <a href="#" class="btn btn-outline-light btn-lg m-2" onclick="checkAdminAccess('/menus')">
+            <i class="bi bi-book"></i> 메뉴 관리
+        </a>
+    </div>
+</div>
+
+<!-- 🔥 주요 기능 카드 섹션 (요청한 부분 복원 + 관리자 체크 적용) -->
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-4">주요 기능</h2>
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="card-icon mb-3"><i class="bi bi-journal-plus"></i></div>
+                    <h5 class="card-title">동적 메뉴 관리</h5>
+                    <p class="card-text">실시간으로 메뉴와 옵션을 추가, 수정, 삭제합니다.</p>
+                    <button class="btn btn-coffee" onclick="checkAdminAccess('/menus')">메뉴 관리로 이동</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="card-icon mb-3"><i class="bi bi-bar-chart-line-fill"></i></div>
+                    <h5 class="card-title">실시간 주문 현황</h5>
+                    <p class="card-text no-wrap-text">10초마다 자동으로 업데이트되는 주문 대시보드입니다.</p>
+                    <button class="btn btn-coffee" onclick="checkAdminAccess('/dashboard')">대시보드로 이동</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="card-icon mb-3"><i class="bi bi-box-seam-fill"></i></div>
+                    <h5 class="card-title">분산 재고 관리</h5>
+                    <p class="card-text">주문 시 Feign Client를 통해 재고를 차감합니다.</p>
+                    <button class="btn btn-coffee" onclick="checkAdminAccess('/stocks')">재고 관리로 이동</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 모달 (로그인/관리자 공용) -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">알림</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="modalMessage"></div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button class="btn btn-primary" id="goToLogin">로그인 페이지로 이동</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    /* -------------------------------
+       로그인 상태 체크
+    --------------------------------*/
+    function checkLoginStatus() {
+        const token = localStorage.getItem("token");
+        const username = localStorage.getItem("username");
+        const role = localStorage.getItem("role");
+
+        if (token && username) {
+            document.getElementById("loginNav").classList.add("d-none");
+            document.getElementById("registerNav").classList.add("d-none");
+            document.getElementById("userNav").classList.remove("d-none");
+            document.getElementById("logoutNav").classList.remove("d-none");
+            document.getElementById("changePasswordNav").classList.remove("d-none");
+
+            document.getElementById("username").textContent = `${username} (${role})`;
+        } else {
+            document.getElementById("loginNav").classList.remove("d-none");
+            document.getElementById("registerNav").classList.remove("d-none");
+            document.getElementById("userNav").classList.add("d-none");
+            document.getElementById("logoutNav").classList.add("d-none");
+            document.getElementById("changePasswordNav").classList.add("d-none");
+        }
+    }
+
+
+    /* -------------------------------
+       모달 표기 공통 함수
+    --------------------------------*/
+    function showModal(title, message, showLoginBtn = true) {
+        document.getElementById("loginModalLabel").textContent = title;
+        document.getElementById("modalMessage").textContent = message;
+
+        const loginBtn = document.getElementById("goToLogin");
+
+        if (showLoginBtn) loginBtn.classList.remove("d-none");
+        else loginBtn.classList.add("d-none");
+
+        const modalEl = document.getElementById("loginModal");
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+
+
+    /* -------------------------------
+       관리자 접근 체크 (핵심)
+    --------------------------------*/
+    function checkAdminAccess(targetUrl) {
+        const token = localStorage.getItem("token");
+        const username = localStorage.getItem("username");
+        const role = localStorage.getItem("role");
+
+        if (!token || !username) {
+            showModal("로그인 필요", "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?", true);
+            return;
+        }
+
+        if (role !== "ADMIN") {
+            showModal("접근 불가", "관리자만 이용할 수 있는 메뉴입니다.", false);
+            return;
+        }
+
+        window.location.href = targetUrl;
+    }
+
+
+    /* -------------------------------
+       네비게이션 메뉴 클릭 처리
+    --------------------------------*/
+    function bindMenuEvents() {
+        const adminPages = ["menuLink", "stockLink", "dashLink", "customerLink"];
+        const loginOnlyPages = ["orderLink", "listLink"];
+
+        // 관리자 권한 체크 메뉴
+        adminPages.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            el.addEventListener("click", function(e) {
+                e.preventDefault();
+                checkAdminAccess(el.getAttribute("href"));
+            });
+        });
+
+        // 로그인만 필요 메뉴
+        loginOnlyPages.forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+
+            el.addEventListener("click", function(e) {
+                e.preventDefault();
+
+                const token = localStorage.getItem("token");
+                const username = localStorage.getItem("username");
+
+                if (!token || !username) {
+                    showModal("로그인 필요", "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?", true);
+                    return;
+                }
+
+                window.location.href = el.getAttribute("href");
+            });
+        });
+    }
+
+    // Hero 주문 버튼도 로그인 체크 추가
+    document.addEventListener("DOMContentLoaded", () => {
+        checkLoginStatus();
+        bindMenuEvents();
+
+        const heroOrderBtn = document.getElementById("heroOrderBtn");
+        if (heroOrderBtn) {
+            heroOrderBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const token = localStorage.getItem("token");
+                const username = localStorage.getItem("username");
+
+                if (!token || !username) {
+                    showModal("로그인 필요", "로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?", true);
+                    return;
+                }
+
+                window.location.href = "/orders";
+            });
+        }
+    });
+
+
+    /* -------------------------------
+       로그인 페이지 이동 버튼
+    --------------------------------*/
+    document.getElementById("goToLogin").addEventListener("click", () => {
+        window.location.href = "/login";
+    });
+
+
+    /* -------------------------------
+       로그아웃 처리
+    --------------------------------*/
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("role");
+        window.location.href = "/";
+    });
+</script>
+
+</body>
+</html>
